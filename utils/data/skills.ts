@@ -1,0 +1,22 @@
+export const skillsData: string[] = [
+  'Javascript',
+  'Typescript',
+  'Python',
+  'C++',
+  'Go',
+  'React',
+  'Express',
+  'Django',
+  'Tailwind',
+  'Docker',
+  'AWS',
+  'Redis',
+  'gRPC',
+  'MongoDB',
+  'PostgreSQL',
+  'Meilisearch',
+  'Firebase',
+  'Git',
+  'GitHub',
+  'Figma'
+];
