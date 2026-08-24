@@ -60,7 +60,7 @@ function Experience() {
 
           <div className="relative">
             {/* Timeline Rail */}
-            <div className="absolute left-[20px] lg:left-[31px] top-8 bottom-12 w-[2px] bg-[#1f223c] z-0">
+            <div className="absolute left-[11px] top-8 bottom-12 w-[2px] bg-[#1f223c] z-0">
               {/* Active Gradient Scroll Line */}
               <div 
                 className="w-full bg-gradient-to-b from-teal-400 via-blue-500 to-purple-600 transition-all duration-200 ease-out"
