@@ -17,6 +17,75 @@ function Skills() {
   const encoderSkills = skillsData.slice(0, half);
   const decoderSkills = skillsData.slice(half);
 
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const coreRef = React.useRef<HTMLDivElement>(null);
+  const encoderRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+  const decoderRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+
+  const [lines, setLines] = useState<{
+    encoder: { x1: number; y1: number; x2: number; y2: number }[];
+    decoder: { x1: number; y1: number; x2: number; y2: number }[];
+  }>({
+    // Pre-populate with default zeroed positions so the lines at least exist in the DOM
+    encoder: encoderSkills.map(() => ({ x1: 0, y1: 0, x2: 0, y2: 0 })),
+    decoder: decoderSkills.map(() => ({ x1: 0, y1: 0, x2: 0, y2: 0 }))
+  });
+
+  useEffect(() => {
+    const updateLines = () => {
+      if (!containerRef.current || !coreRef.current) return;
+      
+      const containerRect = containerRef.current.getBoundingClientRect();
+      const coreRect = coreRef.current.getBoundingClientRect();
+      
+      if (coreRect.width === 0) return; // Hidden on mobile
+
+      const coreCenterX = coreRect.left + coreRect.width / 2 - containerRect.left;
+      const coreCenterY = coreRect.top + coreRect.height / 2 - containerRect.top;
+
+      const newEncoderLines = encoderSkills.map((_, i) => {
+        const el = encoderRefs.current[i];
+        if (!el) return { x1: 0, y1: 0, x2: coreCenterX, y2: coreCenterY };
+        const rect = el.getBoundingClientRect();
+        return {
+          x1: rect.right - containerRect.left,
+          y1: rect.top + rect.height / 2 - containerRect.top,
+          x2: coreRect.left - containerRect.left + 10,
+          y2: coreCenterY
+        };
+      });
+
+      const newDecoderLines = decoderSkills.map((_, i) => {
+        const el = decoderRefs.current[i];
+        if (!el) return { x1: 0, y1: 0, x2: coreCenterX, y2: coreCenterY };
+        const rect = el.getBoundingClientRect();
+        return {
+          x1: coreRect.right - containerRect.left - 10,
+          y1: coreCenterY,
+          x2: rect.left - containerRect.left,
+          y2: rect.top + rect.height / 2 - containerRect.top
+        };
+      });
+
+      setLines({ encoder: newEncoderLines, decoder: newDecoderLines });
+    };
+
+    updateLines();
+    
+    // Force updates to catch any late layout shifts (fonts, images loading)
+    const t1 = setTimeout(updateLines, 100);
+    const t2 = setTimeout(updateLines, 500);
+    const t3 = setTimeout(updateLines, 1000);
+    
+    window.addEventListener('resize', updateLines);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      window.removeEventListener('resize', updateLines);
+    };
+  }, [encoderSkills.length, decoderSkills.length]);
+
   useEffect(() => {
     // If user is interacting, pause the automatic sequence
     if (hoveredSkill) {
@@ -71,24 +140,20 @@ function Skills() {
         </div>
       </div>
 
-      <div className="flex justify-center my-5 lg:py-8">
-        <div className="flex items-center">
-          <span className="w-24 h-[2px] bg-[#1a1443]"></span>
-          <span className="bg-[#1a1443] w-fit text-white p-2 px-5 text-xl rounded-md shadow-[0_0_30px_rgba(236,72,153,0.3)]">
-            Skills
-          </span>
-          <span className="w-24 h-[2px] bg-[#1a1443]"></span>
-        </div>
+      <div className="hidden lg:flex flex-col items-center absolute top-16 -right-8">
+        <span className="bg-[#1a1443] w-fit text-white rotate-90 p-2 px-5 text-xl rounded-md">
+          SKILLS
+        </span>
+        <span className="h-36 w-[2px] bg-[#1a1443]"></span>
       </div>
 
-      <div className="relative max-w-6xl mx-auto px-4 mt-8 lg:mt-16 flex flex-col lg:flex-row gap-8 lg:gap-0 items-center justify-between">
+      <div ref={containerRef} className="relative max-w-6xl mx-auto px-4 mt-8 lg:mt-16 flex flex-col lg:flex-row gap-8 lg:gap-0 items-center justify-between">
         
         {/* SVG Attention Matrix Connections (Desktop) */}
         <div className="hidden lg:block absolute inset-0 pointer-events-none z-0">
           <svg width="100%" height="100%" className="opacity-70">
              {/* Lines connecting Encoder to Attention Core */}
-             {encoderSkills.map((_, i) => {
-                const y1 = 15 + (i * (70/encoderSkills.length));
+             {lines.encoder.map((pos, i) => {
                 const isHovered = hoveredSkill && encoderSkills.includes(hoveredSkill as any);
                 const isSeqActive = activeInput === i && !hoveredSkill;
                 
@@ -96,8 +161,8 @@ function Skills() {
                   <g key={`enc-line-${i}`}>
                     {/* Background Connection Line */}
                     <line 
-                      x1="30%" y1={`${y1}%`}
-                      x2="50%" y2="50%"
+                      x1={pos.x1} y1={pos.y1}
+                      x2={pos.x2} y2={pos.y2}
                       stroke={isHovered || isSeqActive ? "#ec4899" : "#1f223c"}
                       strokeWidth={isHovered || isSeqActive ? "3" : "1"}
                       className="transition-all duration-300"
@@ -106,8 +171,8 @@ function Skills() {
                     {/* Sequential Data Packet (Auto) */}
                     {isSeqActive && (
                       <circle r="4" fill="#ec4899" className="shadow-[0_0_15px_#ec4899]">
-                        <animate attributeName="cx" values="30%;50%" dur="1s" fill="freeze" />
-                        <animate attributeName="cy" values={`${y1}%;50%`} dur="1s" fill="freeze" />
+                        <animate attributeName="cx" values={`${pos.x1};${pos.x2}`} dur="1s" fill="freeze" />
+                        <animate attributeName="cy" values={`${pos.y1};${pos.y2}`} dur="1s" fill="freeze" />
                         <animate attributeName="opacity" values="0;1;1;0" dur="1s" fill="freeze" />
                       </circle>
                     )}
@@ -115,8 +180,8 @@ function Skills() {
                     {/* Continuous Data Packet (On Hover) */}
                     {isHovered && (
                       <circle r="4" fill="#ec4899" className="shadow-[0_0_10px_#ec4899]">
-                        <animate attributeName="cx" values="30%;50%" dur="1.5s" repeatCount="indefinite" />
-                        <animate attributeName="cy" values={`${y1}%;50%`} dur="1.5s" repeatCount="indefinite" />
+                        <animate attributeName="cx" values={`${pos.x1};${pos.x2}`} dur="1.5s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values={`${pos.y1};${pos.y2}`} dur="1.5s" repeatCount="indefinite" />
                         <animate attributeName="opacity" values="0;1;1;0" dur="1.5s" repeatCount="indefinite" />
                       </circle>
                     )}
@@ -125,8 +190,7 @@ function Skills() {
              })}
              
              {/* Lines connecting Attention Core to Decoder */}
-             {decoderSkills.map((_, i) => {
-                const y2 = 15 + (i * (70/decoderSkills.length));
+             {lines.decoder.map((pos, i) => {
                 const isHovered = hoveredSkill && decoderSkills.includes(hoveredSkill as any);
                 const isSeqActive = activeOutput === i && !hoveredSkill;
                 
@@ -134,8 +198,8 @@ function Skills() {
                   <g key={`dec-line-${i}`}>
                     {/* Background Connection Line */}
                     <line 
-                      x1="50%" y1="50%"
-                      x2="70%" y2={`${y2}%`}
+                      x1={pos.x1} y1={pos.y1}
+                      x2={pos.x2} y2={pos.y2}
                       stroke={isHovered || isSeqActive ? "#16f2b3" : "#1f223c"}
                       strokeWidth={isHovered || isSeqActive ? "3" : "1"}
                       className="transition-all duration-300"
@@ -144,8 +208,8 @@ function Skills() {
                     {/* Sequential Data Packet (Auto) */}
                     {isSeqActive && (
                       <circle r="4" fill="#16f2b3" className="shadow-[0_0_15px_#16f2b3]">
-                        <animate attributeName="cx" values="50%;70%" dur="1s" fill="freeze" />
-                        <animate attributeName="cy" values={`50%;${y2}%`} dur="1s" fill="freeze" />
+                        <animate attributeName="cx" values={`${pos.x1};${pos.x2}`} dur="1s" fill="freeze" />
+                        <animate attributeName="cy" values={`${pos.y1};${pos.y2}`} dur="1s" fill="freeze" />
                         <animate attributeName="opacity" values="0;1;1;0" dur="1s" fill="freeze" />
                       </circle>
                     )}
@@ -153,8 +217,8 @@ function Skills() {
                     {/* Continuous Data Packet (On Hover) */}
                     {isHovered && (
                       <circle r="4" fill="#16f2b3" className="shadow-[0_0_10px_#16f2b3]">
-                        <animate attributeName="cx" values="50%;70%" dur="1.5s" repeatCount="indefinite" />
-                        <animate attributeName="cy" values={`50%;${y2}%`} dur="1.5s" repeatCount="indefinite" />
+                        <animate attributeName="cx" values={`${pos.x1};${pos.x2}`} dur="1.5s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values={`${pos.y1};${pos.y2}`} dur="1.5s" repeatCount="indefinite" />
                         <animate attributeName="opacity" values="0;1;1;0" dur="1.5s" repeatCount="indefinite" />
                       </circle>
                     )}
@@ -177,6 +241,7 @@ function Skills() {
              {encoderSkills.map((skill, i) => (
                <SkillChip 
                  key={`enc-${i}`} 
+                 innerRef={(el) => { encoderRefs.current[i] = el; }}
                  skill={skill} 
                  isHovered={hoveredSkill === skill}
                  onHover={() => setHoveredSkill(skill)}
@@ -188,7 +253,7 @@ function Skills() {
         </div>
 
         {/* MULTI-HEAD ATTENTION CORE */}
-        <div 
+        <div ref={coreRef}
           className={`relative z-10 hidden lg:flex w-64 h-64 rounded-full border-4 border-dashed items-center justify-center transition-all duration-300 cursor-crosshair group hover:border-[#16f2b3]
           ${coreProcessing ? 'border-[#ec4899] scale-110' : 'border-[#1f223c] scale-100'}`}
           style={{ animation: 'spin 20s linear infinite' }}
@@ -226,6 +291,7 @@ function Skills() {
              {decoderSkills.map((skill, i) => (
                <SkillChip 
                  key={`dec-${i}`} 
+                 innerRef={(el) => { decoderRefs.current[i] = el; }}
                  skill={skill} 
                  isHovered={hoveredSkill === skill}
                  onHover={() => setHoveredSkill(skill)}
@@ -241,13 +307,14 @@ function Skills() {
   );
 }
 
-function SkillChip({ skill, isHovered, onHover, onLeave, color }: { skill: string, isHovered: boolean, onHover: () => void, onLeave: () => void, color: 'pink' | 'green' }) {
+function SkillChip({ skill, isHovered, onHover, onLeave, color, innerRef }: { skill: string, isHovered: boolean, onHover: () => void, onLeave: () => void, color: 'pink' | 'green', innerRef?: (el: HTMLDivElement | null) => void }) {
   const borderColor = color === 'pink' ? 'border-pink-500' : 'border-[#16f2b3]';
   const textColor = color === 'pink' ? 'text-pink-400' : 'text-[#16f2b3]';
   const shadowColor = color === 'pink' ? 'rgba(236,72,153,0.5)' : 'rgba(22,242,179,0.5)';
   
   return (
     <div 
+      ref={innerRef}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
       className={`flex items-center gap-4 p-2.5 rounded-lg border bg-[#11152c] transition-all duration-300 cursor-pointer
@@ -260,7 +327,7 @@ function SkillChip({ skill, isHovered, onHover, onLeave, color }: { skill: strin
       
       {/* Fake Vector Embedding Array */}
       <span className={`ml-auto text-xs font-mono hidden sm:block ${isHovered ? textColor : 'text-gray-600'}`}>
-        [{Math.random().toFixed(2)}, {Math.random().toFixed(2)}]
+        [{(skill.length * 0.13 % 1).toFixed(2)}, {((skill.charCodeAt(0) * 0.07) % 1).toFixed(2)}]
       </span>
     </div>
   );

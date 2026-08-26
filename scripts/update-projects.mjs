@@ -11,11 +11,7 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN || '';
 
 // Add the exact names of the repositories you want to showcase on your portfolio.
 // If this array is empty [], it will automatically fetch your most recently updated public repos.
-const REPOS_TO_SHOW = [
-  'proyodha-frontend',
-  'proyodha-backend',
-  'proyodha-mobile'
-];
+const REPOS_TO_SHOW = [];
 
 const headers = { 'User-Agent': 'Node.js' };
 let apiPath = `/users/${GITHUB_USERNAME}/repos?sort=updated&per_page=100`;

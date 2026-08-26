@@ -5,19 +5,20 @@ import { personalData } from '@/utils/data/personal-data';
 import { projectsData } from '@/utils/data/projects-data';
 import type { Project } from '@/types/portfolio';
 import ProjectCard from './project-card';
+import ParticlesBackground from './particles';
 import Link from 'next/link';
 import { FaArrowRight } from 'react-icons/fa';
 
 // Asymmetrical Binary Tree Coordinates (Percentages for responsiveness)
 // Center of the node will be placed at these coordinates.
 const treePositions = [
-  { x: 50, y: 15 }, // 0: Root
-  { x: 25, y: 50 }, // 1: Left Child (0)
-  { x: 75, y: 60 }, // 2: Right Child (0)
-  { x: 10, y: 85 }, // 3: Left Child (1)
-  { x: 40, y: 95 }, // 4: Right Child (1)
-  { x: 60, y: 90 }, // 5: Left Child (2)
-  { x: 90, y: 105 }, // 6: Right Child (2)
+  { x: 50, y: 16 }, // 0: Root
+  { x: 25, y: 40 }, // 1: Left Child (0)
+  { x: 75, y: 45 }, // 2: Right Child (0)
+  { x: 12, y: 68 }, // 3: Left Child (1)
+  { x: 38, y: 86 }, // 4: Right Child (1)
+  { x: 62, y: 68 }, // 5: Left Child (2)
+  { x: 88, y: 86 }, // 6: Right Child (2)
 ];
 
 const treeEdges = [
@@ -49,25 +50,23 @@ const Projects = () => {
 
   return (
     <div id='projects' className="relative z-50 my-12 lg:my-24">
-      <div className="sticky top-10 z-30">
-        <div className="w-[80px] h-[80px] bg-violet-100 rounded-full absolute -top-3 left-0 translate-x-1/2 filter blur-3xl opacity-30"></div>
-        <div className="flex items-center justify-start relative">
-          <span className="bg-[#1a1443] absolute left-0 w-fit text-white px-5 py-3 text-xl rounded-md shadow-[0_0_20px_rgba(26,20,67,0.5)]">
-            PROJECT TREE
-          </span>
-          <span className="w-full h-[2px] bg-gradient-to-r from-[#1a1443] to-transparent"></span>
-        </div>
+      <div className="hidden lg:flex flex-col items-center absolute top-16 -left-8">
+        <span className="bg-[#1a1443] w-fit text-white -rotate-90 p-2 px-5 text-xl rounded-md">
+          PROJECTS
+        </span>
+        <span className="h-36 w-[2px] bg-[#1a1443]"></span>
       </div>
 
       <div className="pt-24 pb-12 w-full flex justify-center">
         {projectsData.length > 0 ? (
           <div className="w-full overflow-x-auto custom-scrollbar pb-8 px-4">
             <div className={`relative min-w-[800px] w-full max-w-6xl mx-auto border border-dashed border-[#1f223c]/50 rounded-3xl bg-[#0d1224]/30
-              ${projectsData.length <= 3 ? 'h-[900px] sm:h-[1100px]' : 
-                projectsData.length <= 5 ? 'h-[1200px] sm:h-[1400px]' : 
-                'h-[1500px] sm:h-[1700px] lg:h-[1900px]'}`}
+              ${projectsData.length <= 3 ? 'h-[1200px] sm:h-[1400px]' :
+                projectsData.length <= 5 ? 'h-[1500px] sm:h-[1800px]' :
+                  'h-[1900px] sm:h-[2200px] lg:h-[2400px]'}`}
             >
-              
+              <ParticlesBackground />
+
               {/* SVG Connecting Edges */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" preserveAspectRatio="none">
                 <defs>
@@ -87,32 +86,32 @@ const Projects = () => {
                     return (
                       <g key={i}>
                         {/* Background dimmed line */}
-                        <line 
-                          x1={`${fromPos.x}%`} 
-                          y1={`${fromPos.y}%`} 
-                          x2={`${toPos.x}%`} 
-                          y2={`${toPos.y}%`} 
-                          stroke="#1f223c" 
-                          strokeWidth="2" 
-                          strokeDasharray="6 6"
+                        <line
+                          x1={`${fromPos.x}%`}
+                          y1={`${fromPos.y}%`}
+                          x2={`${toPos.x}%`}
+                          y2={`${toPos.y}%`}
+                          stroke="rgba(22, 242, 179, 0.3)"
+                          strokeWidth="3"
+                          strokeDasharray="8 8"
                         />
                         {/* Active glowing line with marching ants animation */}
-                        <line 
-                          x1={`${fromPos.x}%`} 
-                          y1={`${fromPos.y}%`} 
-                          x2={`${toPos.x}%`} 
-                          y2={`${toPos.y}%`} 
-                          stroke="url(#edge-gradient)" 
-                          strokeWidth={isActive ? "5" : "0"} 
-                          strokeDasharray="8 8"
+                        <line
+                          x1={`${fromPos.x}%`}
+                          y1={`${fromPos.y}%`}
+                          x2={`${toPos.x}%`}
+                          y2={`${toPos.y}%`}
+                          stroke="url(#edge-gradient)"
+                          strokeWidth={isActive ? "6" : "0"}
+                          strokeDasharray="12 12"
                           className="transition-all duration-500 ease-out"
                         >
                           {isActive && (
-                            <animate 
-                              attributeName="stroke-dashoffset" 
-                              from="40" to="0" 
-                              dur="0.6s" 
-                              repeatCount="indefinite" 
+                            <animate
+                              attributeName="stroke-dashoffset"
+                              from="48" to="0"
+                              dur="0.8s"
+                              repeatCount="indefinite"
                             />
                           )}
                         </line>
@@ -128,8 +127,8 @@ const Projects = () => {
                 const pos = treePositions[index];
                 if (!pos) return null;
                 return (
-                  <div 
-                    key={index} 
+                  <div
+                    key={index}
                     className={`absolute transition-all duration-300 ${selectedNode === index ? 'z-40' : 'z-10 hover:z-30'}`}
                     style={{
                       left: `${pos.x}%`,
@@ -137,8 +136,8 @@ const Projects = () => {
                       transform: 'translate(-50%, -50%)'
                     }}
                   >
-                    <ProjectCard 
-                      project={project} 
+                    <ProjectCard
+                      project={project}
                       isSelected={selectedNode === index}
                       onSelect={() => setSelectedNode(selectedNode === index ? null : index)}
                     />

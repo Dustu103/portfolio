@@ -70,7 +70,9 @@ function ProjectCard({ project, isSelected, onSelect }: ProjectCardProps) {
           {/* Hover Overlay Actions */}
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#0d1224]/95 backdrop-blur-md">
             
-            <p className="text-pink-500 font-bold tracking-widest text-sm mb-1 font-mono">TARGET NODE</p>
+            <p className="text-pink-500 font-bold tracking-widest text-sm mb-1 font-mono">
+              {isSelected ? 'TARGET ACQUIRED' : 'INSPECT NODE'}
+            </p>
             
             <div className="flex flex-row items-center gap-4">
               {project.demo_url && (
