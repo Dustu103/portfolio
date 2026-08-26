@@ -5,7 +5,7 @@ import { personalData } from '@/utils/data/personal-data';
 import { projectsData } from '@/utils/data/projects-data';
 import type { Project } from '@/types/portfolio';
 import ProjectCard from './project-card';
-import ParticlesBackground from './particles';
+import ProjectModal from './project-modal';
 import Link from 'next/link';
 import { FaArrowRight } from 'react-icons/fa';
 
@@ -34,6 +34,7 @@ const Projects = () => {
   const [sourceNode, setSourceNode] = useState<number | null>(0);
   const [targetNode, setTargetNode] = useState<number | null>(2);
   const [isAutoPlay, setIsAutoPlay] = useState<boolean>(true);
+  const [selectedCaseStudy, setSelectedCaseStudy] = useState<Project | null>(null);
 
   // Auto-play feature: randomly change nodes every 3 seconds
   useEffect(() => {
@@ -101,8 +102,18 @@ const Projects = () => {
 
   const activePathEdges = getActivePathEdges(sourceNode, targetNode);
 
+  // Store timeout ID to clear it if user clicks again
+  const [resumeTimeoutId, setResumeTimeoutId] = useState<NodeJS.Timeout | null>(null);
+
   const handleNodeClick = (index: number) => {
     setIsAutoPlay(false); // Stop autoplay on user interaction
+    
+    // Automatically resume after 10 seconds of inactivity
+    if (resumeTimeoutId) clearTimeout(resumeTimeoutId);
+    const timeoutId = setTimeout(() => {
+      setIsAutoPlay(true);
+    }, 10000);
+    setResumeTimeoutId(timeoutId);
 
     if (sourceNode === index) {
       // Deselect source
@@ -127,7 +138,7 @@ const Projects = () => {
 
   return (
     <div id='projects' className="relative z-50 my-12 lg:my-24">
-      <div className="hidden lg:flex flex-col items-center absolute top-16 -left-8">
+      <div className="hidden lg:flex flex-col items-center absolute top-16 left-4">
         <span className="bg-[#1a1443] w-fit text-white -rotate-90 p-2 px-5 text-xl rounded-md">
           PROJECTS
         </span>
@@ -142,8 +153,6 @@ const Projects = () => {
                 projectsData.length <= 5 ? 'h-[1500px] sm:h-[1800px]' :
                   'h-[1900px] sm:h-[2200px] lg:h-[2400px]'}`}
             >
-              <ParticlesBackground />
-
               {/* SVG Connecting Edges */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" preserveAspectRatio="none">
                 <defs>
@@ -218,6 +227,7 @@ const Projects = () => {
                       isSource={sourceNode === index}
                       isTarget={targetNode === index}
                       onSelect={() => handleNodeClick(index)}
+                      onReadCaseStudy={() => setSelectedCaseStudy(project)}
                     />
                   </div>
                 );
@@ -228,8 +238,17 @@ const Projects = () => {
           <p className="text-center text-gray-400">No projects found on GitHub.</p>
         )}
       </div>
+
+      {/* Case Study Modal */}
+      {selectedCaseStudy && (
+        <ProjectModal 
+          project={selectedCaseStudy} 
+          onClose={() => setSelectedCaseStudy(null)} 
+        />
+      )}
     </div>
   );
 };
 
 export default Projects;
+

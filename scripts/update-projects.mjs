@@ -62,8 +62,6 @@ https.get(options, (res) => {
         description: repo.description || '',
         html_url: repo.html_url,
         language: repo.language || null,
-        stargazers_count: repo.stargazers_count || 0,
-        forks_count: repo.forks_count || 0,
       }));
 
       const fileContent = `import type { Project } from '@/types/portfolio';

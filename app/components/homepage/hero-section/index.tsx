@@ -8,7 +8,7 @@ import { BsGithub, BsLinkedin } from "react-icons/bs";
 import { FaFacebook, FaTwitterSquare } from "react-icons/fa";
 import { MdDownload } from "react-icons/md";
 import { RiContactsFill } from "react-icons/ri";
-import { SiLeetcode } from "react-icons/si";
+import { SiLeetcode, SiCodeforces } from "react-icons/si";
 
 // Dynamically import 3D to avoid SSR issues
 const SceneWrapper = dynamic(() => import('../../3d/scene-wrapper'), { ssr: false });
@@ -74,6 +74,11 @@ function HeroSection() {
             {personalData.twitter && (
               <Link href={personalData.twitter} target='_blank' className="transition-all text-pink-500 hover:scale-125 duration-300">
                 <FaTwitterSquare size={30} />
+              </Link>
+            )}
+            {personalData.codeforces && (
+              <Link href={personalData.codeforces} target='_blank' className="transition-all text-pink-500 hover:scale-125 duration-300">
+                <SiCodeforces size={30} />
               </Link>
             )}
           </div>

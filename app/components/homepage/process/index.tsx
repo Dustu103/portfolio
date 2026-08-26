@@ -51,23 +51,19 @@ export default function ProcessSequence() {
         </div>
       </div>
 
-      {/* Section Title */}
-      <div className="flex justify-center my-5 lg:py-8">
-        <div className="flex items-center">
-          <span className="w-24 h-[2px] bg-[#1a1443]"></span>
-          <span className="bg-[#1a1443] w-fit text-white p-2 px-5 text-xl rounded-md shadow-[0_0_30px_rgba(236,72,153,0.3)]">
-            MY PROCESS
-          </span>
-          <span className="w-24 h-[2px] bg-[#1a1443]"></span>
-        </div>
+      <div className="hidden lg:flex flex-col items-center absolute top-16 right-4">
+        <span className="bg-[#1a1443] w-fit text-white rotate-90 p-2 px-5 text-xl rounded-md">
+          ENGINEERING PROCESS
+        </span>
+        <span className="h-48 w-[2px] bg-[#1a1443]"></span>
       </div>
 
       <div className="max-w-4xl mx-auto px-4 lg:px-0 py-8 relative">
         {/* Decorative background glow behind terminal */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-pink-500/10 blur-[100px] -z-10 rounded-full" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-pink-500/10 blur-[100px] -z-10 rounded-full pointer-events-none" />
 
         {/* Terminal Window Container */}
-        <div className="rounded-xl overflow-hidden bg-[#0a0d14]/95 backdrop-blur-xl border border-[#1f223c] shadow-2xl">
+        <div className="relative z-10 rounded-xl overflow-hidden bg-[#0a0d14]/95 backdrop-blur-xl border border-[#1f223c] shadow-2xl">
           {/* macOS Title Bar */}
           <div className="flex items-center px-4 py-3 bg-[#11152c] border-b border-[#1f223c]">
             <div className="flex gap-2">

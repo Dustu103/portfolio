@@ -1,7 +1,7 @@
 export const experiences = [
   {
     id: 1,
-    title: "Freelance Full Stack Developer",
+    title: "Lead Full Stack Engineer (Contract)",
     company: "Grull",
     duration: "Dec 2025 - Mar 2026",
     description: [
@@ -12,7 +12,7 @@ export const experiences = [
   },
   {
     id: 2,
-    title: "Frontend Developer Intern",
+    title: "Frontend Engineer",
     company: "Brixi.Ai",
     duration: "Sept 2025 - Feb 2026",
     description: [

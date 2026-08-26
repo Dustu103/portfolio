@@ -14,6 +14,7 @@ export interface PersonalData {
   twitter?: string;
   stackOverflow?: string;
   leetcode?: string;
+  codeforces?: string;
   devUsername: string;
   resume: string;
 }
@@ -26,8 +27,11 @@ export interface Project {
   demo_url?: string;
   image?: string;
   language: string | null;
-  stargazers_count: number;
-  forks_count: number;
+  case_study?: {
+    architecture: string;
+    technical_challenge: string;
+    solution: string;
+  };
 }
 
 export interface Experience {

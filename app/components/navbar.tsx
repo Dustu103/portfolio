@@ -1,26 +1,54 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HiMenu, HiX } from "react-icons/hi";
 
 const NAV_LINKS = [
   { href: "/#about", label: "ABOUT" },
   { href: "/#experience", label: "EXPERIENCE" },
   { href: "/#skills", label: "SKILLS" },
-  { href: "/#education", label: "EDUCATION" },
   { href: "/#projects", label: "PROJECTS" },
+  { href: "/#process", label: "PROCESS" },
+  { href: "/#education", label: "EDUCATION" },
+  { href: "/#contact", label: "CONTACT" },
 ];
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Hide if scrolling down and past 50px, show if scrolling up
+      if (currentScrollY > lastScrollY && currentScrollY > 50) {
+        setIsVisible(false);
+        setMenuOpen(false); // Auto-close mobile menu on scroll down
+      } else if (currentScrollY < lastScrollY) {
+        setIsVisible(true);
+      }
+
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   return (
-    <nav className="bg-transparent" role="navigation">
+    <nav 
+      className={`sticky top-0 z-[100] transition-transform duration-300 ease-in-out bg-[#0a0d14]/90 backdrop-blur-md rounded-b-xl border-b border-[#353951]/50 ${
+        isVisible ? 'translate-y-0' : '-translate-y-[120%]'
+      }`} 
+      role="navigation"
+    >
       <div className="flex items-center justify-between py-5">
         <div className="flex flex-shrink-0 items-center">
           <Link href="/" className="text-[#16f2b3] text-3xl font-bold">
-            ABU SAID
+            ARNAB PRAMANIK
           </Link>
         </div>
 

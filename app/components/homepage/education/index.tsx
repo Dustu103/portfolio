@@ -22,7 +22,7 @@ function Education() {
         </div>
       </div>
 
-      <div className="hidden lg:flex flex-col items-center absolute top-16 -right-8">
+      <div className="hidden lg:flex flex-col items-center absolute top-16 right-4">
         <span className="bg-[#1a1443] w-fit text-white rotate-90 p-2 px-5 text-xl rounded-md">
           EDUCATIONS
         </span>
@@ -31,13 +31,13 @@ function Education() {
 
       <div className="py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-          <div className="flex justify-center items-start">
+          <div className="flex justify-center items-start lg:order-2">
             <div className="w-3/4 h-3/4">
               <AnimationLottie animationPath={lottieFile} />
             </div>
           </div>
 
-          <div>
+          <div className="lg:order-1">
             <div className="flex flex-col gap-6">
               {educations.map(edu => (
                 <GlowCard key={edu.id} identifier={`education-${edu.id}`}>
@@ -77,3 +77,4 @@ function Education() {
 }
 
 export default Education;
+

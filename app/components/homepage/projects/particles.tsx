@@ -1,10 +1,14 @@
 'use client';
 import React, { useEffect, useRef } from 'react';
 
-const BLUE_SHADES = [
+const HEART_COLORS = [
+  '#ef4444', // red-500
+  '#f43f5e', // rose-500
+  '#ec4899', // pink-500
+  '#d946ef', // fuchsia-500
+  '#3b82f6', // blue-500
   '#60a5fa', // blue-400
-  '#2563eb', // blue-600
-  '#1d4ed8', // blue-700
+  '#ffffff', // white
 ];
 
 class Particle {
@@ -22,7 +26,7 @@ class Particle {
     this.x = x;
     this.y = y;
     this.type = type;
-    this.color = BLUE_SHADES[Math.floor(Math.random() * BLUE_SHADES.length)];
+    this.color = HEART_COLORS[Math.floor(Math.random() * HEART_COLORS.length)];
     
     if (type === 'float') {
       this.vx = (Math.random() - 0.5) * 0.5;
@@ -30,13 +34,19 @@ class Particle {
       this.maxLife = Math.random() * 200 + 100;
       this.size = Math.random() * 3 + 1;
     } else {
-      // Heart burst math approximation or general radial burst
-      const angle = Math.random() * Math.PI * 2;
-      const speed = Math.random() * 3 + 1;
-      this.vx = Math.cos(angle) * speed;
-      this.vy = Math.sin(angle) * speed;
-      this.maxLife = Math.random() * 40 + 20;
-      this.size = Math.random() * 4 + 2;
+      // Heart burst math
+      const t = Math.random() * Math.PI * 2;
+      // standard heart parametric equations
+      const hx = 16 * Math.pow(Math.sin(t), 3);
+      const hy = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      
+      // scale down the speed slightly
+      const speedScale = Math.random() * 0.15 + 0.05;
+      this.vx = hx * speedScale;
+      this.vy = hy * speedScale;
+      
+      this.maxLife = Math.random() * 60 + 40;
+      this.size = Math.random() * 6 + 3; // Make them slightly bigger
     }
     this.life = this.maxLife;
   }
@@ -47,18 +57,26 @@ class Particle {
     this.life--;
     
     if (this.type === 'burst') {
-      this.size *= 0.95; // shrink burst particles
+      this.size *= 0.98; // shrink burst particles slightly slower
     }
   }
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.beginPath();
-    ctx.arc(this.x, this.y, Math.max(0.1, this.size), 0, Math.PI * 2);
+    if (this.type === 'burst') {
+      const s = Math.max(0.1, this.size);
+      // Draw a tiny heart instead of a circle
+      ctx.moveTo(this.x, this.y + s);
+      ctx.bezierCurveTo(this.x - s * 1.5, this.y - s * 0.5, this.x - s * 0.5, this.y - s * 1.5, this.x, this.y - s * 0.5);
+      ctx.bezierCurveTo(this.x + s * 0.5, this.y - s * 1.5, this.x + s * 1.5, this.y - s * 0.5, this.x, this.y + s);
+    } else {
+      ctx.arc(this.x, this.y, Math.max(0.1, this.size), 0, Math.PI * 2);
+    }
     ctx.fillStyle = this.color;
     
     // Fade out based on life
     const alpha = Math.max(0, this.life / this.maxLife);
-    ctx.globalAlpha = alpha * 0.6; // Keep them slightly transparent
+    ctx.globalAlpha = alpha * 0.8; // Keep them bright
     ctx.fill();
     ctx.globalAlpha = 1.0;
   }
@@ -97,9 +115,13 @@ export default function ParticlesBackground() {
     // Add a click listener to spawn burst particles
     const handleClick = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
-      spawnHeartBurst(e.clientX - rect.left, e.clientY - rect.top);
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      if (x >= 0 && x <= width && y >= 0 && y <= height) {
+        spawnHeartBurst(x, y);
+      }
     };
-    canvas.addEventListener('click', handleClick);
+    window.addEventListener('click', handleClick);
 
     const handleResize = () => {
       width = canvas.width = canvas.offsetWidth;
@@ -141,7 +163,7 @@ export default function ParticlesBackground() {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      canvas.removeEventListener('click', handleClick);
+      window.removeEventListener('click', handleClick);
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
@@ -149,7 +171,7 @@ export default function ParticlesBackground() {
   return (
     <canvas 
       ref={canvasRef} 
-      className="absolute inset-0 w-full h-full pointer-events-auto z-0 opacity-40 mix-blend-screen"
+      className="fixed inset-0 w-full h-full pointer-events-none z-0 mix-blend-screen"
     />
   );
 }

@@ -9,9 +9,10 @@ interface ProjectCardProps {
   isSource?: boolean;
   isTarget?: boolean;
   onSelect?: () => void;
+  onReadCaseStudy?: () => void;
 }
 
-function ProjectCard({ project, isSource, isTarget, onSelect }: ProjectCardProps) {
+function ProjectCard({ project, isSource, isTarget, onSelect, onReadCaseStudy }: ProjectCardProps) {
   // Extract technologies from the language string
   const technologies = project.language ? project.language.split(',').map(tech => tech.trim()) : [];
 
@@ -77,21 +78,33 @@ function ProjectCard({ project, isSource, isTarget, onSelect }: ProjectCardProps
           </div>
 
           {/* Hover Overlay Actions */}
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#0d1224]/95 backdrop-blur-md">
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#0d1224]/95 backdrop-blur-md">
             
             <p className="text-pink-500 font-bold tracking-widest text-sm mb-1 font-mono">
               {isSource ? 'ROOT NODE' : isTarget ? 'TARGET NODE' : 'INSPECT NODE'}
             </p>
             
-            <div className="flex flex-row items-center gap-4">
+            {project.case_study && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onReadCaseStudy?.();
+                }}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-[#16f2b3] to-blue-600 hover:from-[#13d39c] hover:to-blue-500 text-white font-bold transition-all shadow-[0_0_20px_rgba(22,242,179,0.4)]"
+              >
+                📖 Read Case Study
+              </button>
+            )}
+            
+            <div className="flex flex-row items-center gap-3">
               {project.demo_url && (
                 <Link 
                   href={project.demo_url} 
                   target="_blank" 
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-400 hover:to-violet-500 text-white font-bold transition-all shadow-[0_0_20px_rgba(236,72,153,0.4)]"
+                  className="flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-400 hover:to-violet-500 text-white font-bold transition-all text-sm shadow-[0_0_15px_rgba(236,72,153,0.3)]"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  View Details <FaExternalLinkAlt size={14} />
+                  Demo <FaExternalLinkAlt size={12} />
                 </Link>
               )}
               {project.html_url && (
@@ -99,10 +112,10 @@ function ProjectCard({ project, isSource, isTarget, onSelect }: ProjectCardProps
                   href={project.html_url} 
                   target="_blank" 
                   title="Source Code"
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#11152c] border border-gray-700 hover:border-[#16f2b3] text-gray-300 hover:text-[#16f2b3] transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#11152c] border border-gray-700 hover:border-[#16f2b3] text-gray-300 hover:text-[#16f2b3] transition-colors text-sm"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <FaGithub size={18} /> Code
+                  <FaGithub size={16} /> Code
                 </Link>
               )}
             </div>

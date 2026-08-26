@@ -40,7 +40,7 @@ function Experience() {
         priority
       />
 
-      <div className="hidden lg:flex flex-col items-center absolute top-16 -left-8">
+      <div className="hidden lg:flex flex-col items-center absolute top-16 left-4">
         <span className="bg-[#1a1443] w-fit text-white -rotate-90 p-2 px-5 text-xl rounded-md">
           EXPERIENCES
         </span>
@@ -135,3 +135,4 @@ function Experience() {
 }
 
 export default Experience;
+
