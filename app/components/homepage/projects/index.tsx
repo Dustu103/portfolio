@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { personalData } from '@/utils/data/personal-data';
 import { projectsData } from '@/utils/data/projects-data';
@@ -31,22 +31,99 @@ const treeEdges = [
 ];
 
 const Projects = () => {
-  const [selectedNode, setSelectedNode] = useState<number | null>(null);
+  const [sourceNode, setSourceNode] = useState<number | null>(0);
+  const [targetNode, setTargetNode] = useState<number | null>(2);
+  const [isAutoPlay, setIsAutoPlay] = useState<boolean>(true);
 
-  // Compute shortest path from Root (0) to selected target node
-  const getActivePathEdges = (target: number | null) => {
-    if (target === null) return new Set<string>();
-    const pathEdges = new Set<string>();
-    let current = target;
-    while (current > 0) {
-      const parent = Math.floor((current - 1) / 2);
-      pathEdges.add(`${parent}-${current}`);
-      current = parent;
+  // Auto-play feature: randomly change nodes every 3 seconds
+  useEffect(() => {
+    if (!isAutoPlay) return;
+    
+    const intervalId = setInterval(() => {
+      const maxNodes = Math.min(projectsData.length, 7);
+      if (maxNodes < 2) return;
+      
+      let newSource = Math.floor(Math.random() * maxNodes);
+      let newTarget = Math.floor(Math.random() * maxNodes);
+      
+      while (newSource === newTarget) {
+        newTarget = Math.floor(Math.random() * maxNodes);
+      }
+      
+      setSourceNode(newSource);
+      setTargetNode(newTarget);
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [isAutoPlay]);
+
+  // Compute shortest path from source to target using BFS (Dijkstra on unweighted graph)
+  const getActivePathEdges = (start: number | null, end: number | null) => {
+    if (start === null || end === null || start === end) return new Set<string>();
+    
+    // Build adjacency list
+    const adj: Record<number, number[]> = {};
+    treeEdges.forEach(edge => {
+      if (!adj[edge.from]) adj[edge.from] = [];
+      if (!adj[edge.to]) adj[edge.to] = [];
+      adj[edge.from].push(edge.to);
+      adj[edge.to].push(edge.from);
+    });
+
+    // BFS Queue
+    const queue: { current: number, path: number[] }[] = [{ current: start, path: [start] }];
+    const visited = new Set<number>([start]);
+
+    while (queue.length > 0) {
+      const { current, path } = queue.shift()!;
+      if (current === end) {
+        // Path found! Convert to edge strings formatted as "min-max"
+        const edges = new Set<string>();
+        for (let i = 0; i < path.length - 1; i++) {
+          const a = path[i];
+          const b = path[i + 1];
+          edges.add(`${Math.min(a, b)}-${Math.max(a, b)}`);
+        }
+        return edges;
+      }
+
+      if (adj[current]) {
+        for (const neighbor of adj[current]) {
+          if (!visited.has(neighbor)) {
+            visited.add(neighbor);
+            queue.push({ current: neighbor, path: [...path, neighbor] });
+          }
+        }
+      }
     }
-    return pathEdges;
+    return new Set<string>();
   };
 
-  const activePathEdges = getActivePathEdges(selectedNode);
+  const activePathEdges = getActivePathEdges(sourceNode, targetNode);
+
+  const handleNodeClick = (index: number) => {
+    setIsAutoPlay(false); // Stop autoplay on user interaction
+
+    if (sourceNode === index) {
+      // Deselect source
+      setSourceNode(null);
+      if (targetNode !== null) {
+        setSourceNode(targetNode);
+        setTargetNode(null);
+      }
+    } else if (targetNode === index) {
+      // Deselect target
+      setTargetNode(null);
+    } else if (sourceNode === null) {
+      setSourceNode(index);
+    } else if (targetNode === null) {
+      setTargetNode(index);
+    } else {
+      // Both set, reset source to new click
+      setSourceNode(index);
+      setTargetNode(null);
+    }
+  };
 
   return (
     <div id='projects' className="relative z-50 my-12 lg:my-24">
@@ -129,7 +206,7 @@ const Projects = () => {
                 return (
                   <div
                     key={index}
-                    className={`absolute transition-all duration-300 ${selectedNode === index ? 'z-40' : 'z-10 hover:z-30'}`}
+                    className={`absolute transition-all duration-300 ${sourceNode === index || targetNode === index ? 'z-40' : 'z-10 hover:z-30'}`}
                     style={{
                       left: `${pos.x}%`,
                       top: `${pos.y}%`,
@@ -138,8 +215,9 @@ const Projects = () => {
                   >
                     <ProjectCard
                       project={project}
-                      isSelected={selectedNode === index}
-                      onSelect={() => setSelectedNode(selectedNode === index ? null : index)}
+                      isSource={sourceNode === index}
+                      isTarget={targetNode === index}
+                      onSelect={() => handleNodeClick(index)}
                     />
                   </div>
                 );

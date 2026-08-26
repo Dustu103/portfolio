@@ -6,22 +6,31 @@ import { Project } from '@/types/portfolio';
 
 interface ProjectCardProps {
   project: Project;
-  isSelected?: boolean;
+  isSource?: boolean;
+  isTarget?: boolean;
   onSelect?: () => void;
 }
 
-function ProjectCard({ project, isSelected, onSelect }: ProjectCardProps) {
+function ProjectCard({ project, isSource, isTarget, onSelect }: ProjectCardProps) {
   // Extract technologies from the language string
   const technologies = project.language ? project.language.split(',').map(tech => tech.trim()) : [];
 
   return (
     <div 
       onClick={onSelect}
-      className={`relative group w-[300px] h-[260px] sm:w-[450px] sm:h-[380px] transition-transform duration-500 hover:scale-105 cursor-pointer filter ${isSelected ? 'scale-105 drop-shadow-[0_0_25px_rgba(236,72,153,0.6)]' : 'drop-shadow-[0_0_10px_rgba(22,242,179,0.1)] hover:drop-shadow-[0_0_20px_rgba(22,242,179,0.5)]'}`}
+      className={`relative group w-[300px] h-[260px] sm:w-[450px] sm:h-[380px] transition-transform duration-500 hover:scale-105 cursor-pointer filter ${
+        isSource ? 'scale-105 drop-shadow-[0_0_25px_rgba(236,72,153,0.6)]' : 
+        isTarget ? 'scale-105 drop-shadow-[0_0_25px_rgba(22,242,179,0.6)]' :
+        'drop-shadow-[0_0_10px_rgba(22,242,179,0.1)] hover:drop-shadow-[0_0_20px_rgba(22,242,179,0.5)]'
+      }`}
     >
       {/* Outer Hexagon (Border) */}
       <div 
-        className={`absolute inset-0 transition-colors duration-500 ${isSelected ? 'bg-gradient-to-br from-pink-500 to-violet-600' : 'bg-[#1f223c] group-hover:bg-gradient-to-br group-hover:from-[#16f2b3] group-hover:to-violet-600'}`}
+        className={`absolute inset-0 transition-colors duration-500 ${
+          isSource ? 'bg-gradient-to-br from-pink-500 to-violet-600' :
+          isTarget ? 'bg-gradient-to-br from-[#16f2b3] to-blue-600' :
+          'bg-[#1f223c] group-hover:bg-gradient-to-br group-hover:from-[#16f2b3] group-hover:to-violet-600'
+        }`}
         style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }}
       >
         {/* Inner Hexagon (Content) */}
@@ -71,7 +80,7 @@ function ProjectCard({ project, isSelected, onSelect }: ProjectCardProps) {
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#0d1224]/95 backdrop-blur-md">
             
             <p className="text-pink-500 font-bold tracking-widest text-sm mb-1 font-mono">
-              {isSelected ? 'TARGET ACQUIRED' : 'INSPECT NODE'}
+              {isSource ? 'ROOT NODE' : isTarget ? 'TARGET NODE' : 'INSPECT NODE'}
             </p>
             
             <div className="flex flex-row items-center gap-4">
