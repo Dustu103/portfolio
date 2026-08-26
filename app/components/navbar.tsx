@@ -45,9 +45,10 @@ function Navbar() {
       }`} 
       role="navigation"
     >
-      <div className="flex items-center justify-between py-5">
-        <div className="flex flex-shrink-0 items-center">
-          <Link href="/" className="text-[#16f2b3] text-3xl font-bold">
+      <div className="mx-auto px-6 sm:px-12 lg:max-w-[70rem] xl:max-w-[76rem] 2xl:max-w-[92rem]">
+        <div className="flex items-center justify-between py-5">
+          <div className="flex flex-shrink-0 items-center">
+            <Link href="/" className="text-[#16f2b3] text-2xl lg:text-3xl font-bold">
             ARNAB PRAMANIK
           </Link>
         </div>
@@ -97,6 +98,7 @@ function Navbar() {
           </ul>
         </div>
       )}
+      </div>
     </nav>
   );
 }
