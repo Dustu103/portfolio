@@ -50,7 +50,7 @@ const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
             <h3 className="text-xl font-bold text-[#e6e6e6] border-l-4 border-[#16f2b3] pl-3 flex items-center gap-2">
               <span className="text-[#16f2b3]">01.</span> System Architecture
             </h3>
-            <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
+            <p className="text-gray-300 leading-relaxed text-sm sm:text-base whitespace-pre-line">
               {project.case_study.architecture}
             </p>
           </section>
@@ -59,7 +59,7 @@ const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
             <h3 className="text-xl font-bold text-[#e6e6e6] border-l-4 border-pink-500 pl-3 flex items-center gap-2">
               <span className="text-pink-500">02.</span> Technical Challenge
             </h3>
-            <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
+            <p className="text-gray-300 leading-relaxed text-sm sm:text-base whitespace-pre-line">
               {project.case_study.technical_challenge}
             </p>
           </section>
@@ -68,7 +68,7 @@ const ProjectModal = ({ project, onClose }: ProjectModalProps) => {
             <h3 className="text-xl font-bold text-[#e6e6e6] border-l-4 border-violet-500 pl-3 flex items-center gap-2">
               <span className="text-violet-500">03.</span> The Solution
             </h3>
-            <p className="text-gray-300 leading-relaxed text-sm sm:text-base">
+            <p className="text-gray-300 leading-relaxed text-sm sm:text-base whitespace-pre-line">
               {project.case_study.solution}
             </p>
           </section>
