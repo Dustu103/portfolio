@@ -5,6 +5,20 @@ import { skillsData } from "@/utils/data/skills";
 import { skillsImage } from "@/utils/skill-image";
 import Image from "next/image";
 
+// Semantic correlations between Encoder (input) and Decoder (output) skills
+const ATTENTION_CORRELATIONS: Record<string, string[]> = {
+  'Javascript': ['Firebase', 'GitHub', 'Figma', 'MongoDB'],
+  'Typescript': ['PostgreSQL', 'Redis', 'gRPC', 'GitHub'],
+  'Python': ['PostgreSQL', 'Redis', 'AWS', 'MongoDB'],
+  'C++': ['Redis', 'gRPC', 'Git'],
+  'Go': ['gRPC', 'Redis', 'PostgreSQL', 'AWS'],
+  'React': ['Firebase', 'Figma', 'GitHub', 'Meilisearch'],
+  'Express': ['MongoDB', 'PostgreSQL', 'Redis'],
+  'Django': ['PostgreSQL', 'Redis', 'AWS'],
+  'Tailwind': ['Figma', 'GitHub', 'Firebase'],
+  'Docker': ['AWS', 'Redis', 'gRPC', 'PostgreSQL']
+};
+
 function Skills() {
   const [hoveredSkill, setHoveredSkill] = useState<string | null>(null);
   
@@ -12,6 +26,7 @@ function Skills() {
   const [activeInput, setActiveInput] = useState<number | null>(null);
   const [activeOutput, setActiveOutput] = useState<number | null>(null);
   const [coreProcessing, setCoreProcessing] = useState(false);
+  const [attentionScore, setAttentionScore] = useState<string>("0.94");
 
   const half = Math.ceil(skillsData.length / 2);
   const encoderSkills = skillsData.slice(0, half);
@@ -26,7 +41,6 @@ function Skills() {
     encoder: { x1: number; y1: number; x2: number; y2: number }[];
     decoder: { x1: number; y1: number; x2: number; y2: number }[];
   }>({
-    // Pre-populate with default zeroed positions so the lines at least exist in the DOM
     encoder: encoderSkills.map(() => ({ x1: 0, y1: 0, x2: 0, y2: 0 })),
     decoder: decoderSkills.map(() => ({ x1: 0, y1: 0, x2: 0, y2: 0 }))
   });
@@ -72,7 +86,6 @@ function Skills() {
 
     updateLines();
     
-    // Force updates to catch any late layout shifts (fonts, images loading)
     const t1 = setTimeout(updateLines, 100);
     const t2 = setTimeout(updateLines, 500);
     const t3 = setTimeout(updateLines, 1000);
@@ -87,7 +100,7 @@ function Skills() {
   }, [encoderSkills.length, decoderSkills.length]);
 
   useEffect(() => {
-    // If user is interacting, pause the automatic sequence
+    // Pause automated loop if user is hovering
     if (hoveredSkill) {
       setActiveInput(null);
       setActiveOutput(null);
@@ -96,36 +109,45 @@ function Skills() {
     }
 
     const runSequence = () => {
-      // 1. Trigger random input from Encoder
+      // 1. Select Input Skill from Encoder
       const inIndex = Math.floor(Math.random() * encoderSkills.length);
+      const inSkill = encoderSkills[inIndex];
       setActiveInput(inIndex);
       
-      // 2. Wait for it to reach core (1 second travel time)
+      // Determine correlated output skill on Decoder side
+      const correlations = ATTENTION_CORRELATIONS[inSkill];
+      let outIndex: number;
+      if (correlations && correlations.length > 0 && Math.random() > 0.25) {
+        const targetName = correlations[Math.floor(Math.random() * correlations.length)];
+        const found = decoderSkills.indexOf(targetName);
+        outIndex = found !== -1 ? found : Math.floor(Math.random() * decoderSkills.length);
+      } else {
+        outIndex = Math.floor(Math.random() * decoderSkills.length);
+      }
+      
+      // 2. Data packet travels to Attention Core (1000ms travel time)
       setTimeout(() => {
         setActiveInput(null);
-        setCoreProcessing(true); // Core flashes
+        setAttentionScore((0.88 + Math.random() * 0.11).toFixed(2));
+        setCoreProcessing(true); // Attention Core flashes & calculates
         
-        // 3. Core processes data for 500ms
+        // 3. Core processes query/key matrix for 600ms
         setTimeout(() => {
           setCoreProcessing(false);
+          setActiveOutput(outIndex); // Target Decoder output activates & probability peaks
           
-          // 4. Generate random output to Decoder
-          const outIndex = Math.floor(Math.random() * decoderSkills.length);
-          setActiveOutput(outIndex);
-          
-          // 5. Output finishes traveling after 1 second
+          // 4. Output finishes reception after 1100ms
           setTimeout(() => {
             setActiveOutput(null);
-          }, 1000);
+          }, 1100);
           
-        }, 500);
+        }, 600);
         
       }, 1000);
     };
 
-    // Run first sequence immediately, then loop every 3 seconds
     runSequence();
-    const interval = setInterval(runSequence, 3000);
+    const interval = setInterval(runSequence, 3200);
     return () => clearInterval(interval);
   }, [hoveredSkill, encoderSkills.length, decoderSkills.length]);
 
@@ -244,8 +266,10 @@ function Skills() {
                  innerRef={(el) => { encoderRefs.current[i] = el; }}
                  skill={skill} 
                  isHovered={hoveredSkill === skill}
+                 isSeqActive={activeInput === i}
                  onHover={() => setHoveredSkill(skill)}
                  onLeave={() => setHoveredSkill(null)}
+                 type="encoder"
                  color="pink"
                />
              ))}
@@ -255,7 +279,7 @@ function Skills() {
         {/* MULTI-HEAD ATTENTION CORE */}
         <div ref={coreRef}
           className={`relative z-10 hidden lg:flex w-64 h-64 rounded-full border-4 border-dashed items-center justify-center transition-all duration-300 cursor-crosshair group hover:border-[#16f2b3]
-          ${coreProcessing ? 'border-[#ec4899] scale-110' : 'border-[#1f223c] scale-100'}`}
+          ${coreProcessing ? 'border-[#ec4899] scale-110 shadow-[0_0_40px_rgba(236,72,153,0.5)]' : 'border-[#1f223c] scale-100'}`}
           style={{ animation: 'spin 20s linear infinite' }}
         >
            {/* Reverse spinning inner container to keep text upright */}
@@ -267,13 +291,25 @@ function Skills() {
                ${hoveredSkill ? 'opacity-60 bg-gradient-to-r from-pink-500 to-[#16f2b3]' : 
                  coreProcessing ? 'opacity-80 bg-pink-500' : 'opacity-20 bg-[#16f2b3]/20 animate-pulse'}`} />
              
-             <div className={`relative w-32 h-32 rounded-full flex flex-col items-center justify-center z-20 overflow-hidden transition-all duration-300
-               ${coreProcessing ? 'bg-pink-900/50 border-4 border-pink-500 shadow-[0_0_50px_rgba(236,72,153,0.8)]' : 'bg-[#11152c] border-2 border-[#16f2b3] shadow-[0_0_40px_rgba(22,242,179,0.4)]'}`}>
+             <div className={`relative w-32 h-32 rounded-full flex flex-col items-center justify-center z-20 overflow-hidden transition-all duration-300 text-center px-2
+               ${coreProcessing ? 'bg-pink-950/80 border-4 border-pink-500 shadow-[0_0_50px_rgba(236,72,153,0.9)]' : 'bg-[#11152c] border-2 border-[#16f2b3] shadow-[0_0_40px_rgba(22,242,179,0.4)]'}`}>
+               
                {/* Scanning line effect */}
                <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-transparent -translate-y-full animate-pulse
-                 ${coreProcessing ? 'via-pink-500/40' : 'via-[#16f2b3]/20'}`} />
-               <span className="text-white font-bold tracking-widest text-sm text-center">MULTI-HEAD</span>
-               <span className={`font-mono text-xs mt-1 transition-colors ${coreProcessing ? 'text-pink-400 font-bold' : 'text-[#16f2b3]'}`}>ATTENTION</span>
+                 ${coreProcessing ? 'via-pink-500/50' : 'via-[#16f2b3]/20'}`} />
+               
+               {coreProcessing ? (
+                 <div className="flex flex-col items-center animate-in fade-in zoom-in-95 duration-200">
+                   <span className="text-pink-400 font-mono text-[10px] tracking-wider uppercase font-bold">Softmax(QKᵀ)</span>
+                   <span className="text-white font-mono text-sm font-extrabold my-0.5 tracking-tight">α = {attentionScore}</span>
+                   <span className="text-[10px] text-pink-300/80 font-mono font-medium">d_k = 64</span>
+                 </div>
+               ) : (
+                 <>
+                   <span className="text-white font-bold tracking-widest text-xs sm:text-sm text-center">MULTI-HEAD</span>
+                   <span className="font-mono text-xs mt-0.5 text-[#16f2b3] tracking-wider">ATTENTION</span>
+                 </>
+               )}
              </div>
            </div>
         </div>
@@ -294,8 +330,10 @@ function Skills() {
                  innerRef={(el) => { decoderRefs.current[i] = el; }}
                  skill={skill} 
                  isHovered={hoveredSkill === skill}
+                 isSeqActive={activeOutput === i}
                  onHover={() => setHoveredSkill(skill)}
                  onLeave={() => setHoveredSkill(null)}
+                 type="decoder"
                  color="green"
                />
              ))}
@@ -307,31 +345,68 @@ function Skills() {
   );
 }
 
-function SkillChip({ skill, isHovered, onHover, onLeave, color, innerRef }: { skill: string, isHovered: boolean, onHover: () => void, onLeave: () => void, color: 'pink' | 'green', innerRef?: (el: HTMLDivElement | null) => void }) {
+function SkillChip({ 
+  skill, 
+  isHovered, 
+  isSeqActive, 
+  onHover, 
+  onLeave, 
+  type,
+  color, 
+  innerRef 
+}: { 
+  skill: string; 
+  isHovered: boolean; 
+  isSeqActive: boolean; 
+  onHover: () => void; 
+  onLeave: () => void; 
+  type: 'encoder' | 'decoder';
+  color: 'pink' | 'green'; 
+  innerRef?: (el: HTMLDivElement | null) => void; 
+}) {
+  const isHighlighted = isHovered || isSeqActive;
   const borderColor = color === 'pink' ? 'border-pink-500' : 'border-[#16f2b3]';
-  const textColor = color === 'pink' ? 'text-pink-400' : 'text-[#16f2b3]';
-  const shadowColor = color === 'pink' ? 'rgba(236,72,153,0.5)' : 'rgba(22,242,179,0.5)';
+  const shadowColor = color === 'pink' ? 'rgba(236,72,153,0.6)' : 'rgba(22,242,179,0.6)';
   
+  // Deterministic seed from skill characters
+  const seed = (skill.charCodeAt(0) * 13 + skill.length * 7);
+
   return (
     <div 
       ref={innerRef}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
-      className={`flex items-center gap-4 p-2.5 rounded-lg border bg-[#11152c] transition-all duration-300 cursor-pointer
-      ${isHovered ? `${borderColor} shadow-[0_0_20px_${shadowColor}] scale-110 z-20` : 'border-[#1f223c] hover:border-gray-500 z-10'}`}
+      className={`flex items-center gap-4 p-2.5 rounded-lg border bg-[#11152c] transition-all duration-300 cursor-pointer ${
+        isHighlighted 
+          ? `${borderColor} shadow-[0_0_25px_${shadowColor}] scale-105 z-20 bg-[#161a36]` 
+          : 'border-[#1f223c] hover:border-gray-500 z-10'
+      }`}
     >
       <div className="w-8 h-8 flex-shrink-0 bg-white/5 rounded p-1">
          <Image src={skillsImage(skill)?.src} alt={skill} width={32} height={32} className="w-full h-full object-contain" />
       </div>
-      <span className={`font-mono text-sm sm:text-base ${isHovered ? 'text-white font-bold' : 'text-gray-300'}`}>{skill}</span>
-      
-      {/* Fake Vector Embedding Array */}
-      <span className={`ml-auto text-xs font-mono hidden sm:block ${isHovered ? textColor : 'text-gray-600'}`}>
-        [{(skill.length * 0.13 % 1).toFixed(2)}, {((skill.charCodeAt(0) * 0.07) % 1).toFixed(2)}]
+      <span className={`font-mono text-sm sm:text-base transition-colors ${isHighlighted ? 'text-white font-bold' : 'text-gray-300'}`}>
+        {skill}
       </span>
+      
+      {/* Mathematical AI Tensor / Probability display */}
+      <div className="ml-auto text-xs font-mono hidden sm:block">
+        {type === 'encoder' ? (
+          <span className={`transition-all duration-300 ${isHighlighted ? 'text-pink-400 font-bold' : 'text-gray-500'}`}>
+            {isHighlighted 
+              ? `[+${(0.85 + (seed % 14) * 0.01).toFixed(2)}, -${(0.10 + (seed % 9) * 0.01).toFixed(2)}]` 
+              : `[+${(0.20 + (seed % 60) * 0.01).toFixed(2)}, -${(0.15 + (seed % 50) * 0.01).toFixed(2)}]`}
+          </span>
+        ) : (
+          <span className={`transition-all duration-300 ${isHighlighted ? 'text-[#16f2b3] font-bold text-sm' : 'text-gray-500'}`}>
+            {isHighlighted 
+              ? `p = ${(0.94 + (seed % 5) * 0.01).toFixed(2)}` 
+              : `p = ${(0.03 + (seed % 8) * 0.01).toFixed(2)}`}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
 
 export default Skills;
-
