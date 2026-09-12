@@ -16,36 +16,52 @@ function ProjectCard({ project, isSource, isTarget, onSelect, onReadCaseStudy }:
   // Extract technologies from the language string
   const technologies = project.language ? project.language.split(',').map(tech => tech.trim()) : [];
 
+  // Dynamic live screenshot from demo_url with project.image as fallback
+  const livePreviewUrl =
+    project.demo_url && project.demo_url.startsWith('http')
+      ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.demo_url)}?w=1280`
+      : null;
+
+  const initialThumbnail = livePreviewUrl;
+
   return (
-    <div 
+    <div
       onClick={onSelect}
-      className={`relative group w-[300px] h-[260px] sm:w-[450px] sm:h-[380px] transition-transform duration-500 hover:scale-105 cursor-pointer filter ${
-        isSource ? 'scale-105 drop-shadow-[0_0_25px_rgba(236,72,153,0.6)]' : 
-        isTarget ? 'scale-105 drop-shadow-[0_0_25px_rgba(22,242,179,0.6)]' :
-        'drop-shadow-[0_0_10px_rgba(22,242,179,0.1)] hover:drop-shadow-[0_0_20px_rgba(22,242,179,0.5)]'
-      }`}
+      className={`relative group w-[300px] h-[260px] sm:w-[450px] sm:h-[380px] transition-transform duration-500 hover:scale-105 cursor-pointer filter ${isSource ? 'scale-105 drop-shadow-[0_0_25px_rgba(236,72,153,0.6)]' :
+          isTarget ? 'scale-105 drop-shadow-[0_0_25px_rgba(22,242,179,0.6)]' :
+            'drop-shadow-[0_0_10px_rgba(22,242,179,0.1)] hover:drop-shadow-[0_0_20px_rgba(22,242,179,0.5)]'
+        }`}
     >
       {/* Outer Hexagon (Border) */}
-      <div 
-        className={`absolute inset-0 transition-colors duration-500 ${
-          isSource ? 'bg-gradient-to-br from-pink-500 to-violet-600' :
-          isTarget ? 'bg-gradient-to-br from-[#16f2b3] to-blue-600' :
-          'bg-[#1f223c] group-hover:bg-gradient-to-br group-hover:from-[#16f2b3] group-hover:to-violet-600'
-        }`}
+      <div
+        className={`absolute inset-0 transition-colors duration-500 ${isSource ? 'bg-gradient-to-br from-pink-500 to-violet-600' :
+            isTarget ? 'bg-gradient-to-br from-[#16f2b3] to-blue-600' :
+              'bg-[#1f223c] group-hover:bg-gradient-to-br group-hover:from-[#16f2b3] group-hover:to-violet-600'
+          }`}
         style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }}
       >
         {/* Inner Hexagon (Content) */}
-        <div 
+        <div
           className="absolute inset-[2px] sm:inset-[3px] bg-[#0d1224] flex flex-col items-center justify-center overflow-hidden transition-colors duration-500"
           style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }}
         >
-          {/* Background Image */}
+          {/* Background Image / Dynamic Live Preview */}
           <div className="absolute inset-0 z-0">
-            {project.image ? (
-              <img 
-                src={project.image} 
+            {initialThumbnail ? (
+              <img
+                src={initialThumbnail}
                 alt={project.name}
-                className="w-full h-full object-cover opacity-20 group-hover:opacity-10 transition-opacity duration-300"
+                loading="lazy"
+                onError={(e) => {
+                  const target = e.currentTarget as HTMLImageElement;
+                  // If live preview fails, fall back to static project.image; then to grid.svg
+                  if (project.image && !target.src.includes(project.image)) {
+                    target.src = project.image;
+                  } else {
+                    target.src = '/grid.svg';
+                  }
+                }}
+                className="w-full h-full object-cover opacity-25 group-hover:opacity-15 transition-opacity duration-300"
               />
             ) : (
               <div className="w-full h-full opacity-20 bg-[url('/grid.svg')] bg-cover" />
@@ -57,10 +73,10 @@ function ProjectCard({ project, isSource, isTarget, onSelect, onReadCaseStudy }:
             <h3 className="text-xl sm:text-3xl font-extrabold text-white tracking-wide group-hover:text-[#16f2b3] transition-colors drop-shadow-lg mb-2 sm:mb-3">
               {project.name}
             </h3>
-            
+
             <div className="flex flex-wrap items-center justify-center gap-1.5 mb-3 sm:mb-5">
               {technologies.length > 0 ? (
-                technologies.slice(0, 5).map((tech, idx) => ( 
+                technologies.slice(0, 5).map((tech, idx) => (
                   <span key={idx} className="px-2 py-0.5 text-[9px] sm:text-xs font-bold text-white bg-gradient-to-r from-violet-600/50 to-pink-500/50 border border-violet-500/30 rounded-sm">
                     {tech}
                   </span>
@@ -79,11 +95,11 @@ function ProjectCard({ project, isSource, isTarget, onSelect, onReadCaseStudy }:
 
           {/* Hover Overlay Actions */}
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[#0d1224]/95 backdrop-blur-md">
-            
+
             <p className="text-pink-500 font-bold tracking-widest text-sm mb-1 font-mono">
               {isSource ? 'ROOT NODE' : isTarget ? 'TARGET NODE' : 'INSPECT NODE'}
             </p>
-            
+
             {project.case_study && (
               <button
                 onClick={(e) => {
@@ -95,12 +111,12 @@ function ProjectCard({ project, isSource, isTarget, onSelect, onReadCaseStudy }:
                 📖 Read Case Study
               </button>
             )}
-            
+
             <div className="flex flex-row items-center gap-3">
               {project.demo_url && (
-                <Link 
-                  href={project.demo_url} 
-                  target="_blank" 
+                <Link
+                  href={project.demo_url}
+                  target="_blank"
                   className="flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 hover:from-pink-400 hover:to-violet-500 text-white font-bold transition-all text-sm shadow-[0_0_15px_rgba(236,72,153,0.3)]"
                   onClick={(e) => e.stopPropagation()}
                 >
@@ -108,9 +124,9 @@ function ProjectCard({ project, isSource, isTarget, onSelect, onReadCaseStudy }:
                 </Link>
               )}
               {project.html_url && (
-                <Link 
-                  href={project.html_url} 
-                  target="_blank" 
+                <Link
+                  href={project.html_url}
+                  target="_blank"
                   title="Source Code"
                   className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#11152c] border border-gray-700 hover:border-[#16f2b3] text-gray-300 hover:text-[#16f2b3] transition-colors text-sm"
                   onClick={(e) => e.stopPropagation()}
