@@ -1,7 +1,7 @@
 import type { Project } from '@/types/portfolio';
 
 export const proyodhaProject: Project = {
-  id: 3,
+  id: 1,
   name: "ProYodha",
   description: "Architected an event-driven esports platform and career marketplace. Engineered a decoupled Go and AWS (SQS/SNS) microservices backend processing 100,000+ daily events and handling 10,000+ concurrent connections with strictly <50ms latency.",
   demo_url: "https://www.proyodha.com/landing",

@@ -10,11 +10,11 @@ import {
 } from './case-studies';
 
 export const projectsData: Project[] = [
-  reconProject,
-  razorpayProject,
   proyodhaProject,
-  connectopiaProject,
   swarAiProject,
+  razorpayProject,
+  reconProject,
+  connectopiaProject,
   focusGuardProject,
   auctionPlatformProject,
 ];

@@ -1,7 +1,7 @@
 import type { Project } from '@/types/portfolio';
 
 export const reconProject: Project = {
-  id: 1,
+  id: 4,
   name: "Recon",
   description: "Autonomous Grounded Interview Intelligence Engine with SSRF-shielded ingestion, dual-engine LLM failover matrix (Gemini 1.5 Flash + Groq LLaMA 3.3 70B), deterministic curriculum coverage auditing, and AST JSON repair pipeline. Verified in production across 45 test suites with 380 tests passing.",
   html_url: "https://github.com/Dustu103/Recon",

@@ -1,7 +1,7 @@
 import type { Project } from '@/types/portfolio';
 
 export const connectopiaProject: Project = {
-  id: 4,
+  id: 5,
   name: "Connectopia",
   description: "Spearheaded the end-to-end development of a one-to-one communication web application, integrating user authentication, profile management, and secure messaging features. Designed and deployed a scalable RESTful API using Express, achieving a 30% improvement in data retrieval speed. Implemented a real-time chat feature using WebSocket and Socket.io, enhancing user engagement and reducing response time by 20%.",
   html_url: "https://github.com/Dustu103/Connectopia",

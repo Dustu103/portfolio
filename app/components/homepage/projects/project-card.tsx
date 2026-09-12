@@ -22,21 +22,21 @@ function ProjectCard({ project, isSource, isTarget, onSelect, onReadCaseStudy }:
       ? `https://s0.wp.com/mshots/v1/${encodeURIComponent(project.demo_url)}?w=1280`
       : null;
 
-  const initialThumbnail = livePreviewUrl;
+  const initialThumbnail = livePreviewUrl || project.image;
 
   return (
     <div
       onClick={onSelect}
       className={`relative group w-[300px] h-[260px] sm:w-[450px] sm:h-[380px] transition-transform duration-500 hover:scale-105 cursor-pointer filter ${isSource ? 'scale-105 drop-shadow-[0_0_25px_rgba(236,72,153,0.6)]' :
-          isTarget ? 'scale-105 drop-shadow-[0_0_25px_rgba(22,242,179,0.6)]' :
-            'drop-shadow-[0_0_10px_rgba(22,242,179,0.1)] hover:drop-shadow-[0_0_20px_rgba(22,242,179,0.5)]'
+        isTarget ? 'scale-105 drop-shadow-[0_0_25px_rgba(22,242,179,0.6)]' :
+          'drop-shadow-[0_0_10px_rgba(22,242,179,0.1)] hover:drop-shadow-[0_0_20px_rgba(22,242,179,0.5)]'
         }`}
     >
       {/* Outer Hexagon (Border) */}
       <div
         className={`absolute inset-0 transition-colors duration-500 ${isSource ? 'bg-gradient-to-br from-pink-500 to-violet-600' :
-            isTarget ? 'bg-gradient-to-br from-[#16f2b3] to-blue-600' :
-              'bg-[#1f223c] group-hover:bg-gradient-to-br group-hover:from-[#16f2b3] group-hover:to-violet-600'
+          isTarget ? 'bg-gradient-to-br from-[#16f2b3] to-blue-600' :
+            'bg-[#1f223c] group-hover:bg-gradient-to-br group-hover:from-[#16f2b3] group-hover:to-violet-600'
           }`}
         style={{ clipPath: 'polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)' }}
       >

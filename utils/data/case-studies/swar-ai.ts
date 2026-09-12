@@ -1,7 +1,7 @@
 import type { Project } from '@/types/portfolio';
 
 export const swarAiProject: Project = {
-  id: 5,
+  id: 2,
   name: "Swar AI",
   description: "Architected a comprehensive Hybrid-EdTech platform featuring procedural 3D musical notation and advanced user analytics. Built as a monorepo containing a Next.js/React web client, a mobile app, and a robust microservices backend written in Go (auth, api-gateway, library, plan, social).",
   html_url: "https://github.com/Dustu103/swar-ai",
