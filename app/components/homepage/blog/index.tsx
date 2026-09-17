@@ -29,10 +29,15 @@ function Blog({ blogs }: BlogProps) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-5 lg:gap-8 xl:gap-10">
-        {blogs.slice(0, 6).map((blog, i) => (
-          blog?.cover_image &&
-          <BlogCard blog={blog} key={i} />
-        ))}
+        {blogs && blogs.length > 0 ? (
+          blogs.slice(0, 6).map((blog, i) => (
+            <BlogCard blog={blog} key={blog.id || i} />
+          ))
+        ) : (
+          <div className="col-span-full text-center py-8 text-gray-400">
+            No blogs available at the moment.
+          </div>
+        )}
       </div>
 
       <div className="flex justify-center mt-5 lg:mt-12">
@@ -41,7 +46,7 @@ function Blog({ blogs }: BlogProps) {
           role="button"
           href="/blog"
         >
-          <span>View More</span>
+          <span>View All Blogs</span>
           <FaArrowRight size={16} />
         </Link>
       </div>

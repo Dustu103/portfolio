@@ -65,7 +65,8 @@ export interface BlogPost {
   id: number;
   title: string;
   description: string;
-  cover_image: string;
+  cover_image: string | null;
+  social_image?: string;
   url: string;
   published_at: string;
   reading_time_minutes: number;

@@ -13,6 +13,6 @@ export const personalData: PersonalData = {
   linkedIn: 'https://www.linkedin.com/in/arnab-pramanik-188767351',
   twitter: '',
   codeforces: "https://codeforces.com/profile/Dustu_103",
-  devUsername: "Dustu103",
+  devUsername: "arnab_103",
   resume: "https://drive.google.com/file/d/1k72XQaWBcdBMKuHROAqqy8wOU_9uhB3M/view?usp=drive_link"
 };
