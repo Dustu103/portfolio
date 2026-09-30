@@ -22,24 +22,39 @@ function ContactSection() {
         <div className="lg:w-3/4">
           <div className="flex flex-col gap-5 lg:gap-9">
             <p className="text-sm md:text-xl flex items-center gap-3">
-              <MdAlternateEmail
-                className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={36}
-              />
-              <span>{personalData.email}</span>
+              <a
+                href={`mailto:${personalData.email}`}
+                aria-label="Email Arnab"
+                className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 flex items-center justify-center"
+              >
+                <MdAlternateEmail size={24} />
+              </a>
+              <a
+                href={`mailto:${personalData.email}`}
+                className="hover:text-[#16f2b3] transition-colors break-all"
+              >
+                {personalData.email}
+              </a>
             </p>
             <p className="text-sm md:text-xl flex items-center gap-3">
-              <IoMdCall
-                className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={36}
-              />
-              <span>{personalData.phone}</span>
+              <a
+                href={`tel:${personalData.phone}`}
+                aria-label="Call Arnab"
+                className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 flex items-center justify-center"
+              >
+                <IoMdCall size={24} />
+              </a>
+              <a
+                href={`tel:${personalData.phone}`}
+                className="hover:text-[#16f2b3] transition-colors"
+              >
+                {personalData.phone}
+              </a>
             </p>
             <p className="text-sm md:text-xl flex items-center gap-3">
-              <CiLocationOn
-                className="bg-[#8b98a5] p-2 rounded-full hover:bg-[#16f2b3] hover:scale-110 transition-all duration-300 text-gray-800 cursor-pointer"
-                size={36}
-              />
+              <span className="bg-[#8b98a5] p-2 rounded-full text-gray-800 flex items-center justify-center">
+                <CiLocationOn size={24} />
+              </span>
               <span>{personalData.address}</span>
             </p>
           </div>
