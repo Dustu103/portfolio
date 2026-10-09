@@ -7,9 +7,11 @@ import {
   swarAiProject,
   focusGuardProject,
   auctionPlatformProject,
+  compressLabProject,
 } from './case-studies';
 
 export const projectsData: Project[] = [
+  compressLabProject,
   proyodhaProject,
   swarAiProject,
   razorpayProject,

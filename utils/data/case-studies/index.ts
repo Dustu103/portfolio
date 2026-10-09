@@ -5,3 +5,4 @@ export { connectopiaProject } from './connectopia';
 export { swarAiProject } from './swar-ai';
 export { focusGuardProject } from './focusguard';
 export { auctionPlatformProject } from './auction-platform';
+export { compressLabProject } from './compress-lab';

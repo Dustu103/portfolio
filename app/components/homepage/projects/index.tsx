@@ -12,13 +12,13 @@ import { FaArrowRight } from 'react-icons/fa';
 // Asymmetrical Binary Tree Coordinates (Percentages for responsiveness)
 // Center of the node will be placed at these coordinates.
 const treePositions = [
-  { x: 50, y: 10 }, // 0: Root
-  { x: 25, y: 34 }, // 1: Left Child (0)
-  { x: 75, y: 39 }, // 2: Right Child (0)
-  { x: 12, y: 62 }, // 3: Left Child (1)
-  { x: 38, y: 80 }, // 4: Right Child (1)
-  { x: 62, y: 62 }, // 5: Left Child (2)
-  { x: 88, y: 80 }, // 6: Right Child (2)
+  { x: 50, y: 13.5 }, // 0: Root (padded down so 380px hexagon card is completely visible with generous clearance)
+  { x: 25, y: 36 },   // 1: Left Child (0)
+  { x: 75, y: 40 },   // 2: Right Child (0)
+  { x: 12, y: 63 },   // 3: Left Child (1)
+  { x: 38, y: 82 },   // 4: Right Child (1)
+  { x: 62, y: 63 },   // 5: Left Child (2)
+  { x: 88, y: 82 },   // 6: Right Child (2)
 ];
 
 const treeEdges = [
@@ -145,13 +145,13 @@ const Projects = () => {
         <span className="h-36 w-[2px] bg-[#1a1443]"></span>
       </div>
 
-      <div className="pt-6 lg:pt-8 pb-12 w-full flex justify-center">
+      <div className="pt-10 lg:pt-14 pb-12 w-full flex justify-center">
         {projectsData.length > 0 ? (
-          <div className="w-full overflow-x-auto custom-scrollbar pb-8 px-4">
+          <div className="w-full overflow-x-auto custom-scrollbar pt-6 pb-8 px-4">
             <div className={`relative min-w-[800px] w-full max-w-6xl mx-auto border border-dashed border-[#1f223c]/50 rounded-3xl bg-[#0d1224]/30
-              ${projectsData.length <= 3 ? 'h-[1050px] sm:h-[1200px]' :
-                projectsData.length <= 5 ? 'h-[1300px] sm:h-[1500px]' :
-                  'h-[1600px] sm:h-[1850px] lg:h-[2050px]'}`}
+              ${projectsData.length <= 3 ? 'h-[1100px] sm:h-[1250px]' :
+                projectsData.length <= 5 ? 'h-[1350px] sm:h-[1550px]' :
+                  'h-[1650px] sm:h-[1900px] lg:h-[2100px]'}`}
             >
               {/* SVG Connecting Edges */}
               <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" preserveAspectRatio="none">
