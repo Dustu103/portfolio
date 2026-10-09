@@ -1,16 +1,24 @@
 import { personalData } from "@/utils/data/personal-data";
 import type { BlogPost } from "@/types/portfolio";
+import { blogsData } from "@/utils/data/blogs-data";
 import BlogCard from "../components/homepage/blog/blog-card";
 
 async function getBlogs(): Promise<BlogPost[]> {
-  const res = await fetch(`https://dev.to/api/articles?username=${personalData.devUsername}`);
-
-  if (!res.ok) {
-    throw new Error('Failed to fetch data');
+  try {
+    const res = await fetch(`https://dev.to/api/articles?username=${personalData.devUsername}`, { next: { revalidate: 1800 } });
+    if (!res.ok) return blogsData;
+    const fetched: BlogPost[] = await res.json();
+    
+    // Merge any missing blogs from blogsData
+    const fetchedUrls = new Set(fetched.map(b => b.url?.toLowerCase()));
+    const missingBlogs = blogsData.filter(b => !fetchedUrls.has(b.url?.toLowerCase()));
+    
+    const combined = [...fetched, ...missingBlogs];
+    combined.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+    return combined;
+  } catch {
+    return blogsData;
   }
-
-  const data: BlogPost[] = await res.json();
-  return data;
 }
 
 async function BlogPage() {

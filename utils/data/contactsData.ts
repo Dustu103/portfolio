@@ -9,5 +9,5 @@ export const contactsData: ContactsData = {
   linkedIn: 'https://www.linkedin.com/in/arnab-pramanik-188767351',
   twitter: '',
   stackOverflow: '',
-  devUsername: "Dustu103"
+  devUsername: "arnab_103"
 };

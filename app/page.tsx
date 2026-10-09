@@ -10,14 +10,23 @@ import Skills from "./components/homepage/skills";
 import ParticlesBackground from "./components/homepage/projects/particles";
 import Blog from "./components/homepage/blog";
 import type { BlogPost } from "@/types/portfolio";
+import { blogsData } from "@/utils/data/blogs-data";
 
 async function getBlogs(): Promise<BlogPost[]> {
   try {
-    const res = await fetch(`https://dev.to/api/articles?username=${personalData.devUsername}`, { next: { revalidate: 3600 } });
-    if (!res.ok) return [];
-    return res.json();
+    const res = await fetch(`https://dev.to/api/articles?username=${personalData.devUsername}`, { next: { revalidate: 1800 } });
+    if (!res.ok) return blogsData;
+    const fetched: BlogPost[] = await res.json();
+    
+    // Merge any missing blogs from blogsData
+    const fetchedUrls = new Set(fetched.map(b => b.url?.toLowerCase()));
+    const missingBlogs = blogsData.filter(b => !fetchedUrls.has(b.url?.toLowerCase()));
+    
+    const combined = [...fetched, ...missingBlogs];
+    combined.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+    return combined;
   } catch {
-    return [];
+    return blogsData;
   }
 }
 

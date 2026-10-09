@@ -25,6 +25,11 @@ module.exports = {
         hostname: 'media2.dev.to',
         pathname: '**',
       },
+      {
+        protocol: 'https',
+        hostname: 'dev-to-uploads.s3.us-east-2.amazonaws.com',
+        pathname: '**',
+      },
     ],
   },
 }
